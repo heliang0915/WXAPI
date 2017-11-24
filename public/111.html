@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <style type="text/css">
+        body, ul, div {
+            margin: 0;
+            padding: 0;
+        }
+
+        .refresh-bg {
+            background: #f0f0f0;
+            width: 100%;
+            height: 400px;
+        }
+
+        .refresh-box {
+            background: #fff;
+            height: 100%;
+            transition: all .3s;
+            width: 100%;
+            /*box-shadow: 1px 2px #ddd ;*/
+        }
+
+        .refresh-msg {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translate3d(-50%, 80%, 0);
+            font-size: 12px;
+            color: #aaa;
+        }
+
+    </style>
+</head>
+<body>
+<div class="refresh-bg" id='warp'>
+    <div class="refresh-box" id='box' style="transform: translate3d(0,0,0);">
+        <span class="refresh-msg" id="msg">下拉刷新</span>
+    </div>
+</div>
+<script type="text/javascript">
+    var warp = document.querySelector('#warp');
+    var box = document.querySelector('#box');
+    var msg = document.querySelector('#msg');
+    warp.ontouchstart = function (e) {
+        e = e.touches[0];
+        this.startX = e.clientY;
+        console.log("this.startX>>>>" + this.startX);
+        warp.ontouchmove = function (e2) {
+            e2 = e2.touches[0];
+            this.x = e2.clientY - this.startX;
+            console.log("this.x>>>>" + this.x);
+            let temp = this.x;
+            if (this.x < 0) {
+                temp = 0;
+            }
+            if (this.x > 100) {
+                temp = 100;
+            }
+
+            if(this.x>100){
+                msg.innerHTML="上拉刷新";
+            }else{
+                msg.innerHTML="下拉刷新";
+            }
+            box.style.transform = "translate3d(0," + temp + "px,0)";
+        }
+        warp.ontouchend = function (e) {
+            e = e.touches[0];
+            box.style.transform = "translate3d(0,60px,0)";
+            setTimeout(()=>{
+                box.style.transform = "translate3d(0,0,0)";
+            },1000)
+            warp.onmouseup = null;
+            warp.onmousemove = null;
+
+        }
+    }
+    // setTimeout(()=>{
+    //     box.style.transform="translate3d(0,100px,0)";
+    //     setTimeout(()=>{
+    //           box.style.transform="translate3d(0,0,0)";
+    //     },1000)
+    // },1000)
+</script>
+</body>
+</html>

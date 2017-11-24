@@ -1,0 +1,19 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #{title}
+    div#app
+        button#choose 选取图片
+        span &nbsp;&nbsp;
+        button#openLocation 获取当前的位置信息
+        img#img(style="width:100px;height:100px;")
+        button#scan 扫一扫
+        span#scanMsg
+        p#country
+        p#province
+        p#city
+        p#nickname
+        img#pic(style="height:100px;width:100px;")
+    script(src="/javascripts/wx.js")
+    script(src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js")
