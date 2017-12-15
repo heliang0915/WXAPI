@@ -7,9 +7,6 @@
 
 axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((response) => {
     var data = response.data;
-
-    // console.log();
-
     wx.config({
         debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: data.appId, // 必填，公众号的唯一标识
@@ -31,6 +28,14 @@ axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((res
             ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
     });
     wx.ready(function () {
+
+        var vm=new Vue({
+            el:"#app",
+            data:{
+                message:"Hello Vue",
+                userList:[]
+            }
+        });
 
         //朋友圈分享
         wx.onMenuShareTimeline({
@@ -135,13 +140,20 @@ axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((res
                 sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
                 sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
                 success: function (res) {
+                    alert(res);
                     var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
                     var localId=localIds[0];
-                    uploadImage(localId,function(serverId){
-                        downLoadImg(serverId,function(localId){
-                            img.src=localId;
-                        })
-                    });
+
+                    // localIds.forEach(function(localId){
+
+                        uploadImage(localId,function(serverId){
+                            downLoadImg(serverId,function(localId){
+                                img.src=localId;
+                                // vm.userList.push(localId)
+                            })
+                        });
+                    // })
+
                 }
             });
         }
@@ -168,21 +180,36 @@ axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((res
                 let countryDom=document.querySelector('#country');
                 let nicknameDom=document.querySelector('#nickname');
                 let provinceDom=document.querySelector('#province');
-                var info=userInfoList[0];
-                let {headimgurl,city,country,nickname,province}=info;
-                img.src=headimgurl;
-                cityDom.innerHTML=city;
-                countryDom.innerHTML=country;
-                nicknameDom.innerHTML=nickname;
-                provinceDom.innerHTML=province;
+
+                userInfoList.forEach(function(info){
+                    let {headimgurl,city,country,nickname,province}=info;
+                    let user={};
+                    user.pic=headimgurl;
+                    user.city=city;
+                    user.country=country;
+                    user.nickname=nickname;
+                    user.province=province;
+                    vm.userList.push(user);
+                    //  img.src=headimgurl;
+                    //
+                    // cityDom.innerHTML=city;
+                    // countryDom.innerHTML=country;
+                    // nicknameDom.innerHTML=nickname;
+                    // provinceDom.innerHTML=province;
+                })
+                // var info=userInfoList[0];
+                // let {headimgurl,city,country,nickname,province}=info;
+                // img.src=headimgurl;
+                // cityDom.innerHTML=city;
+                // countryDom.innerHTML=country;
+                // nicknameDom.innerHTML=nickname;
+                // provinceDom.innerHTML=province;
                 // console.log(userInfoList[0].headimgurl);
 
             })
         }
-
         getFollowUserInfo();
         //注册按钮事件
-
         let userInfoList=[];
         var choose=document.querySelector('#choose');
         var img=document.querySelector('#img');
@@ -199,6 +226,42 @@ axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((res
         scan.onclick=function(){
             scanFn();
         }
+
+
+
+        function onBridgeReady(){
+            WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', {
+                    "appId":"wx2421b1c4370ec43b",     //公众号名称，由商户传入
+                    "timeStamp":"1395712654",         //时间戳，自1970年以来的秒数
+                    "nonceStr":"e61463f8efa94090b1f366cccfbbb444", //随机串
+                    "package":"prepay_id=u802345jgfjsdfgsdg888",
+                    "signType":"MD5",         //微信签名方式：
+                    "paySign":"70EA570631E4BB79628FBCA90534C63FF7FADD89" //微信签名
+                },
+                function(res){
+                    if(res.err_msg == "get_brand_wcpay_request:ok" ) {}     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。
+                }
+            );
+        }
+
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+        }else{
+            onBridgeReady();
+        }
+
+
+
+
+
+
+
     })
 })
 

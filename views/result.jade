@@ -1,0 +1,7 @@
+extends  layout
+block content
+    p=info.nickname
+    p=info.province
+    p=info.city
+    img(style="height:100px;width:100px;" src=info.headimgurl)
+    a#login(href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxabdcf8cd45cb81fd&redirect_uri=http://hw.3w.net579.com/wx/getUserCode?page=result&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect") 登录

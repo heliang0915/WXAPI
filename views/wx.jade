@@ -4,16 +4,23 @@ block content
     h1= title
     p Welcome to #{title}
     div#app
+        p {{message}}
         button#choose 选取图片
         span &nbsp;&nbsp;
         button#openLocation 获取当前的位置信息
+
         img#img(style="width:100px;height:100px;")
+
         button#scan 扫一扫
         span#scanMsg
-        p#country
-        p#province
-        p#city
-        p#nickname
-        img#pic(style="height:100px;width:100px;")
-    script(src="/javascripts/wx.js")
+        a#login(href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxabdcf8cd45cb81fd&redirect_uri=http://hw.3w.net579.com/wx/getUserCode?page=result&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect") 登录
+
+        div(v-for="user in userList")
+            p#country {{user.country}}
+            p#province {{user.province}}
+            p#city {{user.city}}
+            p#nickname {{user.nickname}}
+            img#pic(:src="user.pic"  style="height:100px;width:100px;")
+
     script(src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js")
+    script(src="/javascripts/wx.js")
