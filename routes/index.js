@@ -9,8 +9,8 @@ router.get('/wx-index',function (req, res) {
 })
 
 router.get("/downloadPic",function(req, res){
-    ftp.getFile("21.jpg",function(err,stream){
-        console.log("回调错误："+err);
+    var fileName=req.query.fileName;
+    ftp.getFile(fileName,function(err,stream){
         if(err==null){
             stream.pipe(res)
         }else{
@@ -20,6 +20,19 @@ router.get("/downloadPic",function(req, res){
             });
         }
     })
+})
+
+router.get('/delete',function(req, res){
+    var fileName=req.query.fileName;
+    console.log(fileName);
+    ftp.removeFile(fileName,function(err){
+        res.send(err!=null?err:"删除成功...")
+    });
+})
+router.get('/list',function(req, res){
+    ftp.list(function(err,list){
+        res.send(err!=null?err:list)
+    });
 })
 
 

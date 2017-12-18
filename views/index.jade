@@ -5,4 +5,9 @@ block content
   p Welcome to #{title}
   a(href="http://mp.weixin.qq.com/mp/redirect?url=http://hw.3w.net579.com/hotread-pc.apk#weixin.qq.com#wechat_redirect") 点击
   //a(href="//qidian.gtimg.com/QDReader/?redirect=https%3A%2F%2Fitunes.apple.com%2Fcn%2Fapp%2Fqi-dian-du-shu-li-xian-ban%2Fid534174796%3Fmt%3D8") 友盟
-  img(src="./downloadPic",style="width:200px;height:200px;")
+  div#app
+    div(v-for="item in list")
+      p {{item.name}}
+      img(:src="'./downloadPic?fileName='+item.name",style="width:200px;height:200px;")
+  script(src="/lib/vue.min.js")
+  script(src="/javascripts/index.js")
