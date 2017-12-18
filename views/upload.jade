@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  div(style="margin: 40px;")
+      input(style="margin: 40px;" type="button" value="上传图片")#uploadExcel
+  form(target="uploadIframe" action="/upload/uploadFile" method="post" style="display: none" enctype="multipart/form-data")#uploadForm
+    input(type="file" onchange="uploadFile()" name="upload" accept="image/png, image/jpeg")#fileSelect
+    iframe(style="display: none;" name="uploadIframe")#uploadIframe
+  div#app
+      div(v-for="item in list")
+        p {{item.name}}
+        img(:src="'/downloadPic?fileName='+item.name",style="height:200px;")
+  script(src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js")
+  script(src="/javascripts/upload.js")

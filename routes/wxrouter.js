@@ -1,5 +1,5 @@
 /**
- *
+ * 微信
  * User: heliang
  * Date: 2017/9/8.
  */
@@ -7,13 +7,13 @@ var express = require('express');
 var router = express.Router();
 const sha1 = require('sha1')
 const request = require('request')
-const wxconfig = require('../wxconfig')
+const config = require('../config')
 const redis = require('../util/RedisUtil')();
 
 //接受微信服务器返回的信息并在本地生成签名与微信服务器签名校验并返回状态
 router.get('/wxJssdk', function (req, res) {
     var wx = req.query
-    var token = 'heliang0915'
+    var token = config.wx.token;
     var timestamp = wx.timestamp
     var nonce = wx.nonce
     // 1）将token、timestamp、nonce三个参数进行字典序排序
@@ -38,7 +38,7 @@ router.post('/wxJssdk/getJssdk', (req, res) => {
             if (signature) {
                 console.log("从缓存中取出signature:" + signature);
                 res.send({
-                    appId: wxconfig.appid,
+                    appId: config.wx.appid,
                     timestamp: timestamp,
                     nonceStr: nonce_str,
                     signature: signature,
@@ -54,7 +54,7 @@ router.post('/wxJssdk/getJssdk', (req, res) => {
                     redis.setToRedis('signature', signature)
                     // console.log("signature>>>"+signature);
                     res.send({
-                        appId: wxconfig.appid,
+                        appId: config.wx.appid,
                         timestamp: timestamp,
                         nonceStr: nonce_str,
                         signature: signature,
@@ -69,7 +69,7 @@ router.post('/wxJssdk/getJssdk', (req, res) => {
             getJsApiTicket(access_token);
             console.log("读取缓存access_token");
         }else{
-            request('https://api.weixin.qq.com/cgi-bin/token?grant_type=' + wxconfig.grant_type + '&appid=' + wxconfig.appid + '&secret=' + wxconfig.secret, (err, response, body) => {
+            request('https://api.weixin.qq.com/cgi-bin/token?grant_type=' + config.wx.grant_type + '&appid=' + config.wx.appid + '&secret=' + config.wx.secret, (err, response, body) => {
                 var access_token=JSON.parse(body).access_token;
                 console.log("access_token*************"+access_token)
                 redis.setToRedis("access_token",access_token,function () {
@@ -83,7 +83,7 @@ router.post('/wxJssdk/getJssdk', (req, res) => {
 //获取登录code
 router.get('/getUserCode',function(req, res){
         var {code,page}=req.query;
-        var url=`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${wxconfig.appid}&secret=${wxconfig.secret}&code=${code}&grant_type=authorization_code`;
+        var url=`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${config.wx.appid}&secret=${config.wx.secret}&code=${code}&grant_type=authorization_code`;
         request(url, (err, rs, body) => {
             body=JSON.parse(body);
             var access_token=body.access_token;

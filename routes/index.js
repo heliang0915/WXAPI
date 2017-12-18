@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var ftp=require("../util/Ftp")
+var ftp=require("../util/FtpHelper")
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
@@ -8,8 +8,10 @@ router.get('/wx-index',function (req, res) {
     res.render('wx', { title: 'Wx' });
 })
 
+
 router.get("/downloadPic",function(req, res){
     var fileName=req.query.fileName;
+
     ftp.getFile(fileName,function(err,stream){
         if(err==null){
             stream.pipe(res)
