@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>packer</title>
+    <style type="text/css">
+        body, ul, li, div {
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        .lf {
+            float: left;
+        }
+
+        .lr {
+            float: right;
+        }
+        .dp-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #FFF;
+            transform: translate(-100%);
+        }
+        .dp-active{
+            color: #FF9900;
+            opacity: 1;
+            font-weight: bold;
+
+        }
+        .dp-btn {
+            display: inline-block;
+            padding: 10px 20px;
+        }
+
+        .ok {
+            color: #FF9900;
+        }
+
+        .dp-title {
+            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .dp-container {
+            /*height: 100px;*/
+        }
+
+        .dp-list {
+            display: flex;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .dp-list .dp-item {
+            display: inline-block;
+            font-size: 1em;
+            color: #333;
+            text-align: center;
+            flex: 1;
+            transition: all .3s ease-out;
+            opacity: 0.5;
+            /*font-weight:bold;*/
+        }
+
+        .dp-item::before ,.dp-item::after {
+            content: "";
+            display: inline-block;
+            padding: 36px 0;
+        }
+        /*.dp-item-active::before{*/
+            /*padding: 35px 0;*/
+        /*}*/
+
+        .dp-list .dp-item div {
+            /*padding: 7px 0;*/
+            height: 36px;
+        }
+
+        .dp-split {
+            background-image: linear-gradient(to bottom, #d0d0d0, #d0d0d0, transparent, transparent), linear-gradient(to top, #d0d0d0, #d0d0d0, transparent, transparent);
+            width: 100%;
+            height:36px;
+            display: inline-block;
+            background-position: top, bottom;
+            background-size: 100% 1px;
+            background-repeat: no-repeat;
+            position: absolute;
+            left: 0;
+            top:2.4rem;
+            z-index: -1;
+        }
+        [v-cloak]{
+            visibility: hidden;
+        }
+    </style>
+</head>
+
+<body>
+<script src="lib/rem.js"></script>
+<div id="app">
+    <input type="text" @blur="">
+    <div class="dp-wrap"  v-cloak>
+        <div class="dp-title">
+            <span class="dp-btn lf">取消</span>
+            <span class="dp-btn ok lr">确定</span>
+        </div>
+        <div class="dp-container">
+            <span class="dp-split"></span>
+            <ul class="dp-list">
+                <li class="dp-item" style="transform:translate3d(0,0px,0)">
+                    <div v-for="(col,index) in col1" >
+                        {{col}}
+                    </div>
+                </li>
+                <li class="dp-item" style="transform:translate3d(0,0px,0)">
+                    <div v-for="(col,index) in col1" >
+                        {{col}}-{{index}}-{{index*36}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="./lib/vue.min.js"></script>
+<script type="text/javascript">
+    var vm=new Vue({
+        el:'#app',
+        data:{
+            col1:["北京市","天津市","河北省","山西省","内蒙古","辽宁省","吉林省","黑龙江省","上海市","江苏省","浙江省","安徽省","福建省","江西省","山东省","河南省","湖北省","湖南省","广东省","广西省","海南省","重庆市","四川省","贵州省","云南省","西藏省","陕西省","甘肃省","青海省","宁夏省","新疆省","台湾","香港特区","澳门特区"],
+        },
+        methods:{
+            change:function(){
+
+            }
+        }
+    })
+    Array.prototype.slice.apply(getItems()).forEach(function (item) {
+        item.addEventListener('touchstart', touchStartFn, false);
+    })
+    function touchStartFn(e) {
+        e.preventDefault();
+        e = e.changedTouches[0];
+        this.startPos = e.pageY;
+        this.addEventListener('touchmove', touchMoveFn, false);
+        this.addEventListener('touchend', touchEndFn, false);
+    }
+    function touchMoveFn(e) {
+        e.preventDefault();
+        e = e.changedTouches[0];
+        //上一次滚动的位置
+        var oldPos = getTransformY(this.style.WebkitTransform);
+        var add=(Math.abs(e.pageY) - Math.abs(this.startPos))*3/20;
+        //滑动方向
+        var direction = getDirection.call(this,e);
+        var size=getSize();
+        //小幅度滚动时的判断
+        if(Math.abs(add)<2){
+            add*=0.01;
+        }
+        //实时计算当前滚动的位置
+        var pos= add+oldPos;
+        var len = getListLength.call(this);
+        //最大阀值
+        var max = (len-1) * size;
+        //边界判断
+        if(Math.abs(pos)>=Math.abs(max)){
+            pos=-max;
+            console.log(pos);
+        }else if(pos>0){
+            pos=0;
+        }
+        this.style.WebkitTransform = "translate3d(0," + pos + "px,0)";
+    }
+
+
+    function getItems(){
+        var items = document.querySelectorAll(".dp-item");
+        return items;
+    }
+    function getSize(){
+        var dpSplit = document.querySelector(".dp-split");
+        var size=parseFloat(window.getComputedStyle(dpSplit).height);
+        return size;
+    }
+
+    function touchEndFn(e) {
+        e.preventDefault();
+        selectedItem.call(this);
+        this.removeEventListener('touchstart', function () {
+        }, false);
+        this.removeEventListener('touchmove', function () {
+        }, false);
+    }
+
+
+    //滚动动作
+    function scrollMove(index){
+        var items = getItems();
+        var size=getSize();
+        [].slice.apply(items).forEach(function (item,ind) {
+            item.style.WebkitTransform = "translate3d(0,-" + (ind+1+ind*2)*size + "px,0)";
+            selectedItem.call(item);
+        })
+    }
+
+    //最后选中元素
+    function selectedItem() {
+        var size=getSize();
+        var oldPos = getTransformY(this.style.WebkitTransform);
+        //获取整数倍位置防止滑动过头
+        oldPos=Math.floor(getInteger(oldPos));
+        //每一个元素对应的索引以便快速能够找到对应元素
+        var index=Math.floor(Math.abs(oldPos/size));
+        var len = getListLength.call(this);//this.children.length;
+        var ss=0;//index;//-index-(index-1);
+        // this.style.transitionDuration=".3s";
+        this.style.WebkitTransform = "translate3d(0," + (oldPos+ss) + "px,0)";
+        this.className="dp-item dp-item-active";
+        for(var i=0;i<len;i++){
+            this.children[i].className='';
+        }
+        this.children[index].className="dp-active";
+    }
+
+    //获取滚动位置
+    function getTransformY(strStyle) {
+        var transformY = 0;
+        var reg = /(-)?\d+(\.\d+)?px/g;
+        var counter = 0;
+        strStyle.replace(reg, function (item, a, index, list) {
+            counter++;
+            if (counter == 2) {
+                transformY = parseFloat(item);
+            }
+        })
+        return transformY;
+    }
+
+    //滑动方向
+    function getDirection(e){
+        var direction = this.startPos > e.pageY ? "up" : "down";
+        return direction;
+    }
+    //获取选中列表长度
+    function getListLength(){
+        var len = this.children.length;
+        return len;
+    }
+    //获取滚动的整数倍位置
+    function getInteger(pos) {
+        var size=getSize();
+        return Math.floor(pos/size)*size;
+    }
+
+    setTimeout(function (){
+          scrollMove(18);
+    },100)
+
+
+</script>
+</body>
+</html>
