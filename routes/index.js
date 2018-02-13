@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var imgDao = require('../db/imgLib');
+var config = require('../config');
 var fdfs=require("../util/FdfsHelper")
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -40,6 +41,21 @@ router.get('/list',function(req, res){
         //     console.log();
         // })
         let list=[];
+
+        models.forEach((item)=>{
+            // let json=[];
+            item._doc['url']="http://"+config.zimg.host+":"+config.zimg.port+item['md5'];
+            // Object.keys(item._doc).forEach((key)=>{
+            //     json[key]=item._doc[key];
+            //     console.log("key>>>>"+key);
+            //     if(key=="md5"){
+            //         json['url']="http://"+config.zimg.host+":"+config.port+"/"+item[key];
+            //     }
+            // })
+            console.log(item);
+            list.push(item);
+
+        })
         res.send(err!=null?err:models)
     })
     // ftp.list(function(err,list){

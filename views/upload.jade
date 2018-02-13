@@ -10,7 +10,7 @@ block content
       div(style="display:flex;flex-wrap: wrap;")
         div(v-for="item in list" )
             p {{item.name}}
-            img(:src="'http://p.3w.net579.com'+item.md5",style="width:100px;height:100px;margin:0 10px;")
+            img(:src="item.url",style="width:100px;height:100px;margin:0 10px;")
 
 
 
