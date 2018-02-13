@@ -15,6 +15,13 @@ var config={
         user:"hotread",
         password:"1",
         uploadDir:"upload"
+    },
+    zimg:{
+        host:"p.3w.net579.com",
+        port:"80",
+        uploadPath:"/upload",
+        zImgUpload:"http://192.168.124.4/upload",
+        zImgDelete:"http://192.168.124.4/admin"
     }
 }
 module.exports=config;

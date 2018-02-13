@@ -8,8 +8,12 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var wx = require('./routes/wxrouter');
 var upload = require('./routes/upload');
-
+var editrouter = require('./routes/editrouter');
+// var websocket = require('./routes/websocket');
 var app = express();
+
+
+// console.log(app.ws);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,6 +39,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/wx', wx);
 app.use('/upload', upload);
+app.use('/editor', editrouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

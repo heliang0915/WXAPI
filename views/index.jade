@@ -6,6 +6,11 @@ block content
   a(href="http://mp.weixin.qq.com/mp/redirect?url=http://hw.3w.net579.com/hotread-pc.apk#weixin.qq.com#wechat_redirect") 点击
   //a(href="//qidian.gtimg.com/QDReader/?redirect=https%3A%2F%2Fitunes.apple.com%2Fcn%2Fapp%2Fqi-dian-du-shu-li-xian-ban%2Fid534174796%3Fmt%3D8") 友盟
   div#app
+    input#msg(@change="change")
+    button 提交
+    div(style="width:100px;height:15px;border:1px solid red;")
+      div(:style="{width:percent+'%'}" style="height:15px;background:red;transition: all 1s;")
+      p {{percent}}%
     div(v-for="item in list")
       p {{item.name}}
       img(:src="'./downloadPic?fileName='+item.name",style="width:200px;height:200px;")

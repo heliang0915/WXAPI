@@ -8,10 +8,12 @@ var router = express.Router();
 const sha1 = require('sha1')
 const request = require('request')
 const config = require('../config')
+const wxHelper = require('../util/WxHelper')
+const checkJJZ = require('../JJZ/sendJJZ')
 const redis = require('../util/RedisUtil')();
 
 //接受微信服务器返回的信息并在本地生成签名与微信服务器签名校验并返回状态
-router.get('/wxJssdk', function (req, res) {
+router.all('/wxJssdk', function (req, res) {
     var wx = req.query
     var token = config.wx.token;
     var timestamp = wx.timestamp
@@ -28,58 +30,17 @@ router.get('/wxJssdk', function (req, res) {
         res.send(false)
     }
 })
+
+
 //获取js sdk信息 包含accessToken
 router.post('/wxJssdk/getJssdk', (req, res) => {
-    function getJsApiTicket(access_token) {
-        let timestamp = new Date().getTime() / 1000; // 时间戳
-        let nonce_str = 'wx'  // 密钥，字符串任意，可以随机生成
-        let url = req.body.url;  // req.query.url  // 使用接口的url链接，不包含#后的内容
-        redis.getFormRedis('signature', function (err, signature) {
-            if (signature) {
-                console.log("从缓存中取出signature:" + signature);
-                res.send({
-                    appId: config.wx.appid,
-                    timestamp: timestamp,
-                    nonceStr: nonce_str,
-                    signature: signature,
-                })
-            } else {
-                request('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + access_token + '&type=jsapi', (err, response, body) => {
-                    // console.log("body>>>>"+body);
-                    let jsapi_ticket = JSON.parse(body).ticket
-                    // 将请求以上字符串，先按字典排序，再以'&'拼接，如下：其中j > n > t > u，此处直接手动排序
-                    let str = 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + nonce_str + '&timestamp=' + timestamp + '&url=' + url
-                    // 用sha1加密
-                    let signature = sha1(str)
-                    redis.setToRedis('signature', signature)
-                    // console.log("signature>>>"+signature);
-                    res.send({
-                        appId: config.wx.appid,
-                        timestamp: timestamp,
-                        nonceStr: nonce_str,
-                        signature: signature,
-                    })
-                })
-            }
-        })
-    }
-    //将数据access_token 存入redis
-    redis.getFormRedis("access_token",function(err,access_token){
-        if(access_token){
-            getJsApiTicket(access_token);
-            console.log("读取缓存access_token");
-        }else{
-            request('https://api.weixin.qq.com/cgi-bin/token?grant_type=' + config.wx.grant_type + '&appid=' + config.wx.appid + '&secret=' + config.wx.secret, (err, response, body) => {
-                var access_token=JSON.parse(body).access_token;
-                console.log("access_token*************"+access_token)
-                redis.setToRedis("access_token",access_token,function () {
-                    getJsApiTicket(access_token);
-                    console.log("请求接口获取");
-                });
-            });
-        }
-    })
+    let url = req.body.url;  // req.query.url  // 使用接口的url链接，不包含#后的内容
+    wxHelper.getJsApiTicket((err,wxConfig)=>{
+        res.send(wxConfig)
+    },url);
 })
+
+
 //获取登录code
 router.get('/getUserCode',function(req, res){
         var {code,page}=req.query;
@@ -98,6 +59,61 @@ router.get('/getUserCode',function(req, res){
 
             })
     })
+})
+
+//发送模板消息
+router.get('/sendTemplateMsg',(req, res) => {
+
+    redis.getFormRedis('access_token', (err, access_token) => {
+        var url = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${access_token}`;
+        console.log(`url>>>`+url);
+        checkJJZ(function (err,state) {
+            if(state=="已开放申请"){
+                let option = {
+                    url: url,
+                    method: "POST",
+                    json: true,
+                    body: {
+                        touser:"oVeCPwJkREHzv5sQE__jrqoYoVgk",
+                        template_id:"u1_mFLabS6xmnMUfj5M9el0Tx1hwmzAhz17IAxc7NEw",
+                        data:{
+                            first: {
+                                "value":state,
+                                "color":"#173177"
+                            }
+                            // ,
+                            // keynote1:{
+                            //     "value":"巧克力",
+                            //     "color":"#173177"
+                            // },
+                            // keynote2: {
+                            //     "value":"39.8元",
+                            //     "color":"#173177"
+                            // },
+                            // keynote3: {
+                            //     "value":"2014年9月22日",
+                            //     "color":"#173177"
+                            // },
+                            // remark:{
+                            //     "value":"欢迎再次购买！",
+                            //     "color":"#173177"
+                            // }
+                        }
+                    }
+                };
+                request(option, (err, rs, body) => {
+                    console.log(body);
+                    res.send("已发送到微信提醒");
+                })
+            }else{
+                res.send("不需要提醒");
+            }
+        });
+
+
+    });
+
+
 })
 
 //获取用户列表

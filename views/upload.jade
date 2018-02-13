@@ -7,8 +7,13 @@ block content
     input(type="file" onchange="uploadFile()" name="upload" accept="image/png, image/jpeg")#fileSelect
     iframe(style="display: none;" name="uploadIframe")#uploadIframe
   div#app
-      div(v-for="item in list")
-        p {{item.name}}
-        img(:src="'/downloadPic?fileName='+item.name",style="height:200px;")
+      div(style="display:flex;flex-wrap: wrap;")
+        div(v-for="item in list" )
+            p {{item.name}}
+            img(:src="'http://p.3w.net579.com'+item.md5",style="width:100px;height:100px;margin:0 10px;")
+
+
+
+        //img(:src="'/downloadPic?fileName='+item.name",style="height:200px;")
   script(src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js")
   script(src="/javascripts/upload.js")

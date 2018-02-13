@@ -1,0 +1,7 @@
+extends editlayout
+
+block content
+    h2 编辑器测试
+    textarea(style="width:100%;height:360px;")#myEditor
+    textarea(style="display:none")#config=JSON.stringify(config)
+    script(src="/javascripts/edit.js")

@@ -11,21 +11,22 @@
             fileSelect.trigger('click');
         })
     }
-
     function uploadFile(){
         var uploadForm=$("#uploadForm");
         uploadForm[0].submit();
 
     }
-
-    function gotoIndex(){
-        win.location.reload();
+    function gotoIndex(err){
+        if(err){
+           alert(err);
+        }else{
+            win.location.reload();
+        }
+        // document.querySelector("#pic").src=url;
     }
     init();
     win.uploadFile=uploadFile;
     win.gotoIndex=gotoIndex;
-
-
     var vm=new Vue({
         el:"#app",
         data:{
@@ -36,19 +37,18 @@
             getList:function () {
                 axios.get('/list').then((response) => {
                     var data=response.data;
+                    console.log(data);
                     this.list=data;
-                    console.log(this.list);
                 });
+            },
+            isShow:function(item){
+                return item.name.indexOf('.jpg')>-1||item.name.indexOf('.png')>-1;
             }
         },
         mounted(){
             this.getList();
         }
     })
-
-
-
-
 })(window);
 
 
