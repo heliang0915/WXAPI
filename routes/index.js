@@ -39,6 +39,7 @@ router.get('/list',function(req, res){
         // models.forEach((model)=>{
         //     console.log();
         // })
+        let list=[];
         res.send(err!=null?err:models)
     })
     // ftp.list(function(err,list){
