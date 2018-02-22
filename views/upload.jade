@@ -10,7 +10,8 @@ block content
       div(style="display:flex;flex-wrap: wrap;")
         div(v-for="item in list" )
             p {{item.name}}
-            img(:src="item.url",style="width:100px;height:100px;margin:0 10px;")
-            a(:href="'/delete/'+item.uuid+item.md5") 删除
+            img(:src="item.url+'?w=200'",style="width:100px;height:100px;margin:0 10px;")
+            //img(:src="item.url+'?p=0'",style="width:100px;height:100px;margin:0 10px;")
+            a(href="void:javaScript(0)" @click='remove(item)') 删除
   script(src="/lib/vue.min.js")
   script(src="/javascripts/upload.js")

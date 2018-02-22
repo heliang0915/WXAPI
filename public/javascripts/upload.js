@@ -20,10 +20,14 @@
         if(err){
            alert(err);
         }else{
-            win.location.reload();
+            // alert(vm);
+            vm.getList();
+            // win.location.reload();
         }
         // document.querySelector("#pic").src=url;
     }
+
+    
     init();
     win.uploadFile=uploadFile;
     win.gotoIndex=gotoIndex;
@@ -43,6 +47,20 @@
             },
             isShow:function(item){
                 return item.name.indexOf('.jpg')>-1||item.name.indexOf('.png')>-1;
+            },
+            remove:function (item) {
+                var id=item.uuid;
+                var md5=item.md5;
+                var url=`/delete/${id}${md5}`;
+                console.log(url);
+                axios.get(`/delete/${id}${md5}`).then((response)=>{
+                    var msg=response.data;
+                    if(msg=='ok'){
+                        this.getList();
+                    }else{
+                        alert(msg);
+                    }
+                })
             }
         },
         mounted(){
