@@ -11,9 +11,6 @@ block content
         div(v-for="item in list" )
             p {{item.name}}
             img(:src="item.url",style="width:100px;height:100px;margin:0 10px;")
-
-
-
-        //img(:src="'/downloadPic?fileName='+item.name",style="height:200px;")
-  script(src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js")
+            a(:href="'/delete/'+item.uuid+item.md5") 删除
+  script(src="/lib/vue.min.js")
   script(src="/javascripts/upload.js")

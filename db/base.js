@@ -17,7 +17,7 @@ var model = require('./schema');
 exports.setModelName = function (modelNa) {
     modelName = modelNa;
     ModelSchema[modelName] = mongoose.model(modelName);
-    console.log("modelName>>>"+modelName);
+    // console.log("modelName>>>"+modelName);
     exports.modelName = modelName;
     exports.model = model;
 }

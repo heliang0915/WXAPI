@@ -49,14 +49,13 @@ router.post("/uploadFile", function (req, res) {
                     // var zimg=new ZImgCli();
                     console.log("重命名完毕....");
                     zimg.upload(dstPath,inputFile,'userfile',(err,md5)=>{
-                        console.log(md5);
                         fs.unlink(dstPath);
                         if(err){
                             res.send("<script>parent.gotoIndex('"+err+"')</script>")
                         }else{
                             //存入数据库
                             addImgModel(md5,realName,()=>{
-                                zimg.delete(md5);
+                                // zimg.delete(md5);
                                 res.send("<script>parent.gotoIndex()</script>")
                             });
 
@@ -105,6 +104,9 @@ function addImgModel(md5,name,callback){
         callback!=null?callback():null;
     })
 }
+
+
+
 
 // router.get("/download/:md5",function (req,res) {
 //     // group1/M00/00/00/wKh8DFp4IRaAaWRoAAWylkemyos119.jpg
