@@ -5,8 +5,12 @@
  */
 
 
-axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((response) => {
+axios.post('/wx/wxJssdk/getJssdk', {
+    url: location.href.split('#')[0]
+}).then((response) => {
+    // alert(1);
     var data = response.data;
+
     wx.config({
         debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: data.appId, // 必填，公众号的唯一标识
@@ -40,7 +44,7 @@ axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((res
         //朋友圈分享
         wx.onMenuShareTimeline({
             title: '朋友圈分享标题', // 分享标题
-            link: 'http://hw.3w.net579.com/wx', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            link: 'http://hw.3w.net579.com/wx-index', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
             imgUrl: 'http://hw.3w.net579.com/images/2.jpg', // 分享图标
             success: function () {
                 // 用户确认分享后执行的回调函数
@@ -57,7 +61,7 @@ axios.post('/wx/wxJssdk/getJssdk', {url: location.href.split('#')[0]}).then((res
         wx.onMenuShareAppMessage({
             title: "分享标题",
             desc: "描述",
-            link: 'http://hw.3w.net579.com/wx_index', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            link: 'http://hw.3w.net579.com/wx-index', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
             imgUrl: 'http://hw.3w.net579.com/images/2.jpg', // 分享图标
         });
 

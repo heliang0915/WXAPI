@@ -29,6 +29,9 @@ router.post("/uploadFile", function (req, res) {
     var uploadPath=path.join(__dirname,"/../public/upload/")
     var form = new multiparty.Form({uploadDir: uploadPath});
     //上传完成后处理
+    console.log(req.headers);
+    console.log(req.body);
+
     form.parse(req, function (err, fields, files) {
         var filesTmp = JSON.stringify(files, null, 2);
         console.log("上传完成后处理...");

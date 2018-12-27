@@ -36,6 +36,7 @@ router.all('/wxJssdk', function (req, res) {
 router.post('/wxJssdk/getJssdk', (req, res) => {
     let url = req.body.url;  // req.query.url  // 使用接口的url链接，不包含#后的内容
     wxHelper.getJsApiTicket((err,wxConfig)=>{
+        console.log("wxConfig::::"+JSON.stringify(wxConfig));
         res.send(wxConfig)
     },url);
 })
@@ -44,7 +45,9 @@ router.post('/wxJssdk/getJssdk', (req, res) => {
 //获取登录code
 router.get('/getUserCode',function(req, res){
         var {code,page}=req.query;
+        console.log("code::::::::"+code);
         var url=`https://api.weixin.qq.com/sns/oauth2/access_token?appid=${config.wx.appid}&secret=${config.wx.secret}&code=${code}&grant_type=authorization_code`;
+        console.log(url);
         request(url, (err, rs, body) => {
             body=JSON.parse(body);
             var access_token=body.access_token;
@@ -65,50 +68,89 @@ router.get('/getUserCode',function(req, res){
 router.get('/sendTemplateMsg',(req, res) => {
 
     redis.getFormRedis('access_token', (err, access_token) => {
+
         var url = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${access_token}`;
         console.log(`url>>>`+url);
-        checkJJZ(function (err,state) {
-            if(state=="已开放申请"){
-                let option = {
-                    url: url,
-                    method: "POST",
-                    json: true,
-                    body: {
-                        touser:"oVeCPwJkREHzv5sQE__jrqoYoVgk",
-                        template_id:"u1_mFLabS6xmnMUfj5M9el0Tx1hwmzAhz17IAxc7NEw",
-                        data:{
-                            first: {
-                                "value":state,
-                                "color":"#173177"
-                            }
-                            // ,
-                            // keynote1:{
-                            //     "value":"巧克力",
-                            //     "color":"#173177"
-                            // },
-                            // keynote2: {
-                            //     "value":"39.8元",
-                            //     "color":"#173177"
-                            // },
-                            // keynote3: {
-                            //     "value":"2014年9月22日",
-                            //     "color":"#173177"
-                            // },
-                            // remark:{
-                            //     "value":"欢迎再次购买！",
-                            //     "color":"#173177"
-                            // }
-                        }
+
+        let option = {
+            url: url,
+            method: "POST",
+            json: true,
+            body: {
+                touser:"oVeCPwJkREHzv5sQE__jrqoYoVgk",
+                template_id:"diCo40MBrsv8Q-3SE8-h81G13o_CnEpHSChkRgEMQA0",
+                data:{
+                    first: {
+                        "value":"这是事件",
+                        "color":"#173177"
                     }
-                };
-                request(option, (err, rs, body) => {
-                    console.log(body);
-                    res.send("已发送到微信提醒");
-                })
-            }else{
-                res.send("不需要提醒");
+                    // ,
+                    // keynote1:{
+                    //     "value":"巧克力",
+                    //     "color":"#173177"
+                    // },
+                    // keynote2: {
+                    //     "value":"39.8元",
+                    //     "color":"#173177"
+                    // },
+                    // keynote3: {
+                    //     "value":"2014年9月22日",
+                    //     "color":"#173177"
+                    // },
+                    // remark:{
+                    //     "value":"欢迎再次购买！",
+                    //     "color":"#173177"
+                    // }
+                }
             }
-        });
+        };
+        request(option, (err, rs, body) => {
+            console.log(body);
+            res.send("已发送到微信提醒");
+        })
+
+        // checkJJZ(function (err,state) {
+        //     if(state=="已开放申请"){
+        //         let option = {
+        //             url: url,
+        //             method: "POST",
+        //             json: true,
+        //             body: {
+        //                 touser:"oVeCPwJkREHzv5sQE__jrqoYoVgk",
+        //                 template_id:"u1_mFLabS6xmnMUfj5M9el0Tx1hwmzAhz17IAxc7NEw",
+        //                 data:{
+        //                     first: {
+        //                         "value":state,
+        //                         "color":"#173177"
+        //                     }
+        //                     // ,
+        //                     // keynote1:{
+        //                     //     "value":"巧克力",
+        //                     //     "color":"#173177"
+        //                     // },
+        //                     // keynote2: {
+        //                     //     "value":"39.8元",
+        //                     //     "color":"#173177"
+        //                     // },
+        //                     // keynote3: {
+        //                     //     "value":"2014年9月22日",
+        //                     //     "color":"#173177"
+        //                     // },
+        //                     // remark:{
+        //                     //     "value":"欢迎再次购买！",
+        //                     //     "color":"#173177"
+        //                     // }
+        //                 }
+        //             }
+        //         };
+        //         request(option, (err, rs, body) => {
+        //             console.log(body);
+        //             res.send("已发送到微信提醒");
+        //         })
+        //     }else{
+        //         res.send("不需要提醒");
+        //     }
+        // });
 
 
     });

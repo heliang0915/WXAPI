@@ -37,7 +37,7 @@ function getAccessToken(callback){
  * Date: 2017/12/28.
  */
 function getJsApiTicket(callback,url){
-    let timestamp = new Date().getTime() / 1000; // 时间戳
+    let timestamp = "wx"; // 时间戳
     let nonce_str = 'wx'  // 密钥，字符串任意，可以随机生成
     let wxConfig={};
 
@@ -54,10 +54,11 @@ function getJsApiTicket(callback,url){
                 callback(err,wxConfig);
             } else {
                 request('https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + access_token + '&type=jsapi', (err, response, body) => {
-                    // console.log("body>>>>"+body);
+                    console.log("body>>>>"+body);
                     let jsapi_ticket = JSON.parse(body).ticket
                     // 将请求以上字符串，先按字典排序，再以'&'拼接，如下：其中j > n > t > u，此处直接手动排序
                     let str = 'jsapi_ticket=' + jsapi_ticket + '&noncestr=' + nonce_str + '&timestamp=' + timestamp + '&url=' + url
+                    console.log(str);
                     // 用sha1加密
                     let signature = sha1(str)
                     redis.setToRedis('signature', signature)

@@ -75,9 +75,7 @@ ZImgCli.prop.upload = function (filePath, file, formFiledName, callback) {
 ZImgCli.prop.delete=function (md5,callback) {
     md5=md5.replace('/','');
     let url=`${this.deleteDo}?md5=${md5}&t=1`;
-
     this.XHR(url,(err, html) => {
-
         console.log("执行删除动作,地址:"+url);
         const $ = cheerio.load(html);
         callback=callback==null?function () {}:callback
